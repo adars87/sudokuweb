@@ -4,6 +4,8 @@ An interactive, browser-based Sudoku puzzle solver with **heatmap-style cell col
 
 ![Screenshot](https://img.shields.io/badge/Status-Live-brightgreen)
 
+### 🌐 [Play Live → https://adars87.github.io/sudokuweb/](https://adars87.github.io/sudokuweb/)
+
 ## ✨ Features
 
 - **Interactive 9×9 Grid** — Click and type numbers (1–9), navigate with arrow keys
