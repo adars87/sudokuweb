@@ -13,7 +13,6 @@ An interactive, browser-based Sudoku puzzle solver with **heatmap-style cell col
 - **Heatmap Visualization** — Cell background colors reflect the digit value (1–9), like a heat map
 - **6 Color Palettes** — Inferno 🔥, Ocean 🌊, Forest 🌲, Sunset 🌅, Mono ⬛, Thermal 🌡️
 - **Validation & Confirmation** — Detects duplicate values and warns before solving
-- **Sample Puzzle** — Quickly load a classic puzzle to try it out
 - **Responsive Design** — Works on desktop and mobile
 
 ## 🚀 Getting Started

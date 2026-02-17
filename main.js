@@ -458,40 +458,10 @@ function verifyBoard() {
 // Unified function: mirrors Java's option 1 ("generate a random solution")
 // and option 2 ("input a new puzzle" via preset sample).
 // The sample puzzle comes from the Java repo's sam[][] array.
-const SAMPLE_PUZZLE = [
-    [8, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 3, 6, 0, 0, 0, 0, 0],
-    [0, 7, 0, 0, 9, 0, 2, 0, 0],
-    [0, 5, 0, 0, 0, 7, 0, 0, 0],
-    [0, 0, 0, 0, 4, 5, 7, 0, 0],
-    [0, 0, 0, 1, 0, 0, 0, 3, 0],
-    [0, 0, 1, 0, 0, 0, 0, 6, 8],
-    [0, 0, 8, 5, 0, 0, 0, 1, 0],
-    [0, 9, 0, 0, 0, 0, 4, 0, 0],
-];
-
 function generateRandomPuzzle() {
     clearBoard();
 
     const difficulty = difficultySelect ? difficultySelect.value : 'medium';
-
-    // ── Sample: load the hardcoded Java repo puzzle directly ──
-    if (difficulty === 'sample') {
-        const puzzle = cloneBoard(SAMPLE_PUZZLE);
-        for (let r = 0; r < 9; r++) {
-            for (let c = 0; c < 9; c++) {
-                if (puzzle[r][c] !== 0) {
-                    const cell = document.getElementById(`cell-${r}-${c}`);
-                    cell.value = puzzle[r][c];
-                    cell.classList.add('user-input', 'given');
-                    userCells[r][c] = true;
-                }
-            }
-        }
-        applyHeatmapColors();
-        setStatus('📋 Sample puzzle loaded (from Java repo). Hit Solve!', 'success');
-        return;
-    }
 
     // ── Random generation with difficulty ──
     let clues;
