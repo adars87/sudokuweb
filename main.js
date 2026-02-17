@@ -546,6 +546,24 @@ modalOverlay.addEventListener('click', (e) => {
     }
 });
 
+// ─── Palette Toggle (collapsible) ────────────────────────
+const paletteToggle = document.getElementById('palette-toggle');
+const paletteBody = document.getElementById('palette-body');
+
+if (paletteToggle && paletteBody) {
+    paletteToggle.addEventListener('click', () => {
+        const isExpanded = paletteToggle.getAttribute('aria-expanded') === 'true';
+        paletteToggle.setAttribute('aria-expanded', !isExpanded);
+        paletteBody.classList.toggle('collapsed', isExpanded);
+    });
+
+    // Auto-collapse on mobile
+    if (window.innerWidth <= 560) {
+        paletteToggle.setAttribute('aria-expanded', 'false');
+        paletteBody.classList.add('collapsed');
+    }
+}
+
 // ─── Init ────────────────────────────────────────────────
 buildBoard();
 buildPalettePicker();
