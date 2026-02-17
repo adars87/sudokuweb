@@ -384,7 +384,10 @@ function attemptSolve() {
             setStatus('✅ Puzzle solved!', 'success');
             showStats(stats);
         } else {
-            setStatus('❌ No solution exists for this configuration.', 'error');
+            const reason = stats.backtracks >= 1_000_000 || stats.elapsedMs >= 5000
+                ? '❌ Puzzle too complex or unsolvable — solver timed out.'
+                : '❌ No solution exists for this configuration.';
+            setStatus(reason, 'error');
             showStats(stats);
         }
     }, 50);

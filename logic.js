@@ -110,15 +110,23 @@ function buildCandidateCube() {
 
 /**
  * Solve the board in-place using backtracking with randomized candidates.
- * Mirrors Java's process() + check() logic.
+ * Mirrors Java's process() + check() logic, with etest() exhaustion
+ * check implemented as a backtrack limit.
  *
  * Uses the ncube (3D candidate array) so each cell tries numbers in a
  * random order, matching the Java repo's approach where "the values in
  * this 3D array are generated randomly" so "the time taken to arrive at
  * a solution cannot be predicted."
  *
+ * Safety limits prevent infinite loops on unsolvable configurations:
+ * - MAX_BACKTRACKS: mirrors Java's etest() exhaustion check
+ * - MAX_TIME_MS: hard time limit as a safety net
+ *
  * Returns { solved: boolean, backtracks: number, elapsedMs: number }
  */
+const MAX_BACKTRACKS = 1_000_000;
+const MAX_TIME_MS = 5000;
+
 function solveBoardWithStats(board, cube) {
   const stats = { solved: false, backtracks: 0, elapsedMs: 0 };
   const startTime = performance.now();
@@ -129,6 +137,11 @@ function solveBoardWithStats(board, cube) {
   }
 
   function backtrack() {
+    // Safety: check backtrack limit (mirrors Java's etest() exhaustion)
+    if (stats.backtracks >= MAX_BACKTRACKS) return false;
+    // Safety: check time limit
+    if (performance.now() - startTime > MAX_TIME_MS) return false;
+
     for (let r = 0; r < 9; r++) {
       for (let c = 0; c < 9; c++) {
         if (board[r][c] === 0) {
@@ -141,6 +154,9 @@ function solveBoardWithStats(board, cube) {
               if (backtrack()) return true;
               board[r][c] = 0;
               stats.backtracks++;
+              // Check limits after each backtrack
+              if (stats.backtracks >= MAX_BACKTRACKS) return false;
+              if (performance.now() - startTime > MAX_TIME_MS) return false;
             }
           }
           return false; // trigger backtrack
