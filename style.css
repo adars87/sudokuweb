@@ -124,13 +124,13 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
   padding: 0.85rem 1.2rem;
   background: transparent;
   border: none;
   cursor: pointer;
   color: var(--text-primary);
   font-family: var(--font);
-  position: relative;
 }
 
 .palette-toggle .section-title {
@@ -138,20 +138,15 @@ body {
 }
 
 .toggle-arrow {
-  font-size: 1.1rem;
+  font-size: 1.5rem;
   color: var(--accent);
-  transition: transform 0.25s ease;
-  position: absolute;
-  right: 1.2rem;
-  width: 28px;
-  height: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background: rgba(123, 92, 255, 0.15);
-  border: 1.5px solid var(--accent);
-  box-shadow: 0 0 8px var(--accent-glow);
+  filter: drop-shadow(0 0 6px var(--accent-glow));
+  transition: transform 0.3s ease, filter 0.3s ease;
+  line-height: 1;
+}
+
+.palette-toggle:hover .toggle-arrow {
+  filter: drop-shadow(0 0 12px var(--accent-glow));
 }
 
 .palette-toggle[aria-expanded="false"] .toggle-arrow {
