@@ -1,6 +1,11 @@
 /* ========================================================
    Sudoku Solver — Main Controller  |  main.js
    UI rendering, event handling, heatmap color palettes
+   Enhanced with features from adars87/Sudoku (Java):
+     - Random puzzle generation with difficulty
+     - Solve statistics display
+     - Board verification (already-solved detection)
+     - Randomized candidate order in solver
    ======================================================== */
 
 // ─── Color Palettes ─────────────────────────────────────
@@ -110,12 +115,18 @@ const modalProceed = document.getElementById('modal-proceed');
 const modalCancel = document.getElementById('modal-cancel');
 const btnSolve = document.getElementById('btn-solve');
 const btnClear = document.getElementById('btn-clear');
-const btnSample = document.getElementById('btn-sample');
+const btnGenerate = document.getElementById('btn-generate');
+const btnVerify = document.getElementById('btn-verify');
+const difficultySelect = document.getElementById('difficulty-select');
 const paletteContainer = document.getElementById('palette-options');
 const legendContainer = document.getElementById('heatmap-legend');
+const statsContainer = document.getElementById('stats-bar');
 
 // Track which cells were user-inputted vs solved
 let userCells = Array.from({ length: 9 }, () => Array(9).fill(false));
+
+// Store the solution for a generated puzzle (for hint feature)
+let currentSolution = null;
 
 // ─── Build Board ─────────────────────────────────────────
 function buildBoard() {
@@ -147,6 +158,7 @@ function buildBoard() {
                 }
                 applyHeatmapColors();
                 clearStatus();
+                clearStats();
             });
 
             // Arrow-key navigation
@@ -313,6 +325,41 @@ function clearStatus() {
     statusBar.className = 'status-bar';
 }
 
+// ─── Stats Display ───────────────────────────────────────
+function showStats(stats) {
+    if (!statsContainer) return;
+
+    let timeStr;
+    if (stats.elapsedMs < 1) {
+        timeStr = `${stats.elapsedMs.toFixed(3)} ms`;
+    } else if (stats.elapsedMs < 1000) {
+        timeStr = `${stats.elapsedMs.toFixed(1)} ms`;
+    } else {
+        const secs = stats.elapsedMs / 1000;
+        const mins = Math.floor(secs / 60);
+        const remSecs = (secs % 60).toFixed(1);
+        timeStr = mins > 0 ? `${mins} min ${remSecs} sec` : `${remSecs} sec`;
+    }
+
+    statsContainer.innerHTML = `
+        <div class="stat-item">
+            <span class="stat-label">⏱ Time</span>
+            <span class="stat-value">${timeStr}</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-label">↩ Backtracks</span>
+            <span class="stat-value">${stats.backtracks.toLocaleString()}</span>
+        </div>
+    `;
+    statsContainer.classList.add('visible');
+}
+
+function clearStats() {
+    if (!statsContainer) return;
+    statsContainer.innerHTML = '';
+    statsContainer.classList.remove('visible');
+}
+
 // ─── Highlight Errors ────────────────────────────────────
 function highlightErrors(conflicts) {
     // Clear previous
@@ -325,6 +372,22 @@ function highlightErrors(conflicts) {
 // ─── Solve Flow ──────────────────────────────────────────
 function attemptSolve(force = false) {
     const board = readBoard();
+
+    // ── Check if already fully solved (mirrors Java's etest(9)) ──
+    if (isBoardComplete(board)) {
+        const conflicts = validateBoard(board);
+        if (conflicts.length === 0) {
+            highlightErrors([]);
+            setStatus('🎉 This board is already a valid, complete Sudoku!', 'success');
+            return;
+        } else {
+            highlightErrors(conflicts);
+            setStatus(`❌ Board is full but has ${conflicts.length} conflict(s).`, 'error');
+            return;
+        }
+    }
+
+    // ── Validate before solving ──
     const conflicts = validateBoard(board);
 
     if (conflicts.length > 0 && !force) {
@@ -338,16 +401,131 @@ function attemptSolve(force = false) {
 
     // Clear errors
     highlightErrors([]);
+    setStatus('⏳ Solving...', '');
 
-    const clone = cloneBoard(board);
-    const solved = solveBoard(clone);
+    // Use setTimeout to let the UI update before solving (can be CPU-heavy)
+    setTimeout(() => {
+        const clone = cloneBoard(board);
+        const cube = buildCandidateCube();
+        const stats = solveBoardWithStats(clone, cube);
 
-    if (solved) {
-        writeBoard(clone, true);
-        setStatus('✅ Puzzle solved!', 'success');
-    } else {
-        setStatus('❌ No solution exists for this configuration.', 'error');
+        if (stats.solved) {
+            writeBoard(clone, true);
+            setStatus('✅ Puzzle solved!', 'success');
+            showStats(stats);
+        } else {
+            setStatus('❌ No solution exists for this configuration.', 'error');
+            showStats(stats);
+        }
+    }, 50);
+}
+
+// ─── Verify Board ────────────────────────────────────────
+// Mirrors Java's evalid() + etest(9) — checks if the user's
+// input is valid and/or already a complete solution.
+function verifyBoard() {
+    const board = readBoard();
+
+    // Count filled cells
+    let filledCount = 0;
+    for (let r = 0; r < 9; r++) {
+        for (let c = 0; c < 9; c++) {
+            if (board[r][c] !== 0) filledCount++;
+        }
     }
+
+    if (filledCount === 0) {
+        setStatus('Board is empty — nothing to verify.', 'warning');
+        return;
+    }
+
+    const conflicts = validateBoard(board);
+
+    if (conflicts.length > 0) {
+        highlightErrors(conflicts);
+        setStatus(`❌ Invalid: ${conflicts.length} conflict(s) found.`, 'error');
+    } else {
+        highlightErrors([]);
+        if (isBoardComplete(board)) {
+            setStatus('🎉 Your input is a valid Sudoku solution!', 'success');
+        } else {
+            setStatus(`✅ Valid so far! ${filledCount}/81 cells filled, no conflicts.`, 'success');
+        }
+    }
+}
+
+// ─── Generate Puzzle (Random or Sample) ──────────────────
+// Unified function: mirrors Java's option 1 ("generate a random solution")
+// and option 2 ("input a new puzzle" via preset sample).
+// The sample puzzle comes from the Java repo's sam[][] array.
+const SAMPLE_PUZZLE = [
+    [8, 0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 0, 3, 6, 0, 0, 0, 0, 0],
+    [0, 7, 0, 0, 9, 0, 2, 0, 0],
+    [0, 5, 0, 0, 0, 7, 0, 0, 0],
+    [0, 0, 0, 0, 4, 5, 7, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 3, 0],
+    [0, 0, 1, 0, 0, 0, 0, 6, 8],
+    [0, 0, 8, 5, 0, 0, 0, 1, 0],
+    [0, 9, 0, 0, 0, 0, 4, 0, 0],
+];
+
+function generateRandomPuzzle() {
+    clearBoard();
+
+    const difficulty = difficultySelect ? difficultySelect.value : 'medium';
+
+    // ── Sample: load the hardcoded Java repo puzzle directly ──
+    if (difficulty === 'sample') {
+        const puzzle = cloneBoard(SAMPLE_PUZZLE);
+        for (let r = 0; r < 9; r++) {
+            for (let c = 0; c < 9; c++) {
+                if (puzzle[r][c] !== 0) {
+                    const cell = document.getElementById(`cell-${r}-${c}`);
+                    cell.value = puzzle[r][c];
+                    cell.classList.add('user-input', 'given');
+                    userCells[r][c] = true;
+                }
+            }
+        }
+        applyHeatmapColors();
+        setStatus('📋 Sample puzzle loaded (from Java repo). Hit Solve!', 'success');
+        return;
+    }
+
+    // ── Random generation with difficulty ──
+    let clues;
+    switch (difficulty) {
+        case 'easy': clues = 42; break;
+        case 'medium': clues = 32; break;
+        case 'hard': clues = 24; break;
+        default: clues = 32;
+    }
+
+    setStatus('⏳ Generating puzzle...', '');
+
+    setTimeout(() => {
+        const { puzzle, solution, stats } = generatePuzzle(clues);
+        currentSolution = solution;
+
+        // Write puzzle to board — mark given cells as locked
+        for (let r = 0; r < 9; r++) {
+            for (let c = 0; c < 9; c++) {
+                const cell = document.getElementById(`cell-${r}-${c}`);
+                const val = puzzle[r][c];
+                if (val !== 0) {
+                    cell.value = val;
+                    cell.classList.add('user-input', 'given');
+                    userCells[r][c] = true;
+                }
+            }
+        }
+
+        applyHeatmapColors();
+        const diffLabel = difficulty.charAt(0).toUpperCase() + difficulty.slice(1);
+        setStatus(`🎲 ${diffLabel} puzzle generated (${clues} clues). Good luck!`, 'success');
+        showStats(stats);
+    }, 50);
 }
 
 // ─── Clear Board ─────────────────────────────────────────
@@ -356,41 +534,15 @@ function clearBoard() {
         for (let c = 0; c < 9; c++) {
             const cell = document.getElementById(`cell-${r}-${c}`);
             cell.value = '';
-            cell.classList.remove('user-input', 'solved', 'error');
+            cell.classList.remove('user-input', 'solved', 'error', 'given');
             cell.style.animationDelay = '';
             userCells[r][c] = false;
         }
     }
+    currentSolution = null;
     applyHeatmapColors();
     clearStatus();
-}
-
-// ─── Sample Puzzle ───────────────────────────────────────
-function loadSample() {
-    clearBoard();
-    const sample = [
-        [5, 3, 0, 0, 7, 0, 0, 0, 0],
-        [6, 0, 0, 1, 9, 5, 0, 0, 0],
-        [0, 9, 8, 0, 0, 0, 0, 6, 0],
-        [8, 0, 0, 0, 6, 0, 0, 0, 3],
-        [4, 0, 0, 8, 0, 3, 0, 0, 1],
-        [7, 0, 0, 0, 2, 0, 0, 0, 6],
-        [0, 6, 0, 0, 0, 0, 2, 8, 0],
-        [0, 0, 0, 4, 1, 9, 0, 0, 5],
-        [0, 0, 0, 0, 8, 0, 0, 7, 9],
-    ];
-    for (let r = 0; r < 9; r++) {
-        for (let c = 0; c < 9; c++) {
-            if (sample[r][c] !== 0) {
-                const cell = document.getElementById(`cell-${r}-${c}`);
-                cell.value = sample[r][c];
-                cell.classList.add('user-input');
-                userCells[r][c] = true;
-            }
-        }
-    }
-    applyHeatmapColors();
-    setStatus('Sample puzzle loaded. Hit Solve!', '');
+    clearStats();
 }
 
 // ─── Event Listeners ─────────────────────────────────────
@@ -398,7 +550,13 @@ btnSolve.addEventListener('click', () => attemptSolve(false));
 
 btnClear.addEventListener('click', clearBoard);
 
-btnSample.addEventListener('click', loadSample);
+if (btnGenerate) {
+    btnGenerate.addEventListener('click', generateRandomPuzzle);
+}
+
+if (btnVerify) {
+    btnVerify.addEventListener('click', verifyBoard);
+}
 
 modalProceed.addEventListener('click', () => {
     modalOverlay.classList.add('hidden');

@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Interactive Sudoku puzzle solver with heatmap visualization and customizable color palettes." />
+  <meta name="description"
+    content="Interactive Sudoku puzzle solver with heatmap visualization, random puzzle generator, and customizable color palettes. Powered by backtracking algorithm." />
   <title>Sudoku Solver — Heatmap Edition</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
   <div class="app-container">
     <!-- Header -->
@@ -39,18 +43,36 @@
       </div>
     </main>
 
-    <!-- Controls -->
+    <!-- Primary Controls -->
     <section class="controls">
       <button id="btn-solve" class="btn btn-primary" title="Solve the puzzle">
         <span class="btn-icon">✨</span> Solve
       </button>
+      <button id="btn-verify" class="btn btn-verify" title="Verify if current board is valid">
+        <span class="btn-icon">🔍</span> Verify
+      </button>
       <button id="btn-clear" class="btn btn-secondary" title="Clear all cells">
         <span class="btn-icon">🗑️</span> Clear
       </button>
-      <button id="btn-sample" class="btn btn-tertiary" title="Load a sample puzzle">
-        <span class="btn-icon">📋</span> Sample
-      </button>
     </section>
+
+    <!-- Generator Controls -->
+    <section class="controls generator-controls">
+      <button id="btn-generate" class="btn btn-generate" title="Generate a random puzzle">
+        <span class="btn-icon">🎲</span> Generate
+      </button>
+      <select id="difficulty-select" class="difficulty-select" title="Select difficulty">
+        <option value="easy">Easy</option>
+        <option value="medium" selected>Medium</option>
+        <option value="hard">Hard</option>
+        <option value="sample">📋 Sample</option>
+      </select>
+    </section>
+
+    <!-- Stats Bar -->
+    <div id="stats-bar" class="stats-bar">
+      <!-- Populated by JS after solve/generate -->
+    </div>
 
     <!-- Status -->
     <div id="status-bar" class="status-bar"></div>
@@ -75,4 +97,5 @@
   <script src="logic.js"></script>
   <script src="main.js"></script>
 </body>
+
 </html>
