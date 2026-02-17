@@ -383,6 +383,15 @@ body {
   letter-spacing: 0.5px;
 }
 
+.difficulty-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.75rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--border-grid);
+}
+
 .btn {
   display: inline-flex;
   align-items: center;

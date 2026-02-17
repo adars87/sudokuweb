@@ -260,7 +260,7 @@ function applyHeatmapColors() {
 function buildLegend() {
     legendContainer.innerHTML = '';
     const palette = COLOR_PALETTES[activePalette];
-    for (let i = 0; i <= 9; i++) {
+    for (let i = 1; i <= 9; i++) {
         const item = document.createElement('div');
         item.className = 'legend-item';
 
@@ -270,7 +270,7 @@ function buildLegend() {
 
         const label = document.createElement('div');
         label.className = 'legend-label';
-        label.textContent = i === 0 ? '∅' : i;
+        label.textContent = i;
 
         item.appendChild(color);
         item.appendChild(label);
