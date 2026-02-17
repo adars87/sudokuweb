@@ -87,7 +87,7 @@ const btnSolve = document.getElementById('btn-solve');
 const btnClear = document.getElementById('btn-clear');
 const btnGenerate = document.getElementById('btn-generate');
 const btnVerify = document.getElementById('btn-verify');
-const difficultySelect = document.getElementById('difficulty-select');
+let activeDifficulty = 'medium';
 const paletteContainer = document.getElementById('palette-options');
 const legendContainer = document.getElementById('heatmap-legend');
 const statsContainer = document.getElementById('stats-bar');
@@ -434,7 +434,7 @@ function verifyBoard() {
 function generateRandomPuzzle() {
     clearBoard();
 
-    const difficulty = difficultySelect ? difficultySelect.value : 'medium';
+    const difficulty = activeDifficulty;
 
     // ── Random generation with difficulty ──
     let clues;
@@ -537,6 +537,15 @@ if (paletteToggle && paletteBody) {
         paletteBody.classList.add('collapsed');
     }
 }
+
+// ─── Difficulty Buttons ──────────────────────────────────
+document.querySelectorAll('.difficulty-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        activeDifficulty = btn.dataset.difficulty;
+        document.querySelectorAll('.difficulty-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+    });
+});
 
 // ─── Init ────────────────────────────────────────────────
 buildBoard();

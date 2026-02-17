@@ -475,35 +475,35 @@ body {
   transform: translateY(0);
 }
 
-/* --- Difficulty Selector --- */
-.difficulty-select {
-  appearance: none;
-  padding: 0.7rem 2rem 0.7rem 1.2rem;
-  border-radius: 999px;
+/* --- Difficulty Buttons --- */
+.difficulty-options {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.difficulty-btn {
+  padding: 0.45rem 1rem;
+  border-radius: var(--radius-sm);
   border: 1px solid var(--border-grid);
-  background: var(--bg-card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239898b4'/%3E%3C/svg%3E") no-repeat right 1rem center;
-  background-size: 10px 6px;
-  color: var(--text-primary);
+  background: var(--bg-card);
+  color: var(--text-secondary);
   font-family: var(--font);
-  font-size: 0.85rem;
+  font-size: 0.78rem;
   font-weight: 500;
   cursor: pointer;
   transition: var(--transition);
 }
 
-.difficulty-select:hover {
+.difficulty-btn:hover {
   border-color: var(--accent);
+  transform: translateY(-1px);
 }
 
-.difficulty-select:focus {
-  outline: none;
+.difficulty-btn.active {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-glow);
-}
-
-.difficulty-select option {
-  background: var(--bg-card);
+  background: rgba(123, 92, 255, 0.15);
   color: var(--text-primary);
+  box-shadow: 0 0 12px var(--accent-glow);
 }
 
 .btn-warning {
