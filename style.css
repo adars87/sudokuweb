@@ -362,6 +362,10 @@ body {
 /* --- Unified Controls Bar --- */
 .controls-bar {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .controls-row {
@@ -370,6 +374,13 @@ body {
   flex-wrap: wrap;
   justify-content: center;
   align-items: center;
+}
+
+.difficulty-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  letter-spacing: 0.5px;
 }
 
 .btn {
