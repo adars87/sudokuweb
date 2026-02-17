@@ -24,7 +24,7 @@ An interactive, browser-based Sudoku puzzle solver with **heatmap-style cell col
 - **"Already Solved" Detection** — Recognizes when the board is already complete
 
 ### 🎨 Customization
-- **4 Color Palettes** — Ocean 🌊, Forest 🌲, Sunset 🌅, Mono ⬛
+- **4 Color Palettes** — Ocean, Forest, Sunset, Mono
 - **Heatmap Legend** — Visual scale showing the color mapping for digits 1–9
 - **Collapsible Settings Panel** — Toggle with the ⬡ hexagon icon
 
@@ -58,25 +58,24 @@ Or visit the [live site](https://adars87.github.io/sudokuweb/) hosted on GitHub 
 
 ```
 sudoku-app/
-├── index.html       # Main HTML page
-├── style.css        # Styling (dark theme, animations, responsive)
-├── logic.js         # Sudoku validation, solver & puzzle generator
-├── main.js          # UI controller, heatmap colors, palette picker
-├── play-sudoku.js   # Playwright automation script (testing)
-├── test-mobile.js   # Multi-viewport screenshot testing
-└── README.md        # This file
+├── index.html    # Main HTML page
+├── style.css     # Styling (dark theme, animations, responsive)
+├── logic.js      # Sudoku validation, solver & puzzle generator
+├── main.js       # UI controller, heatmap colors, palette picker
+├── .gitignore    # Git ignore rules
+└── README.md     # This file
 ```
 
 ---
 
 ## 🎨 Color Palettes
 
-| Palette | Range | Preview |
-|---------|-------|---------|
-| Ocean   | Deep Blue → Cyan → Mint | 🌊 |
-| Forest  | Dark Green → Light Green | 🌲 |
-| Sunset  | Violet → Pink → Gold | 🌅 |
-| Mono    | Dark Gray → Light Gray | ⬛ |
+| Palette | Range |
+|---------|-------|
+| Ocean   | Deep Blue → Cyan → Mint |
+| Forest  | Dark Green → Light Green |
+| Sunset  | Violet → Pink → Gold |
+| Mono    | Dark Gray → Light Gray |
 
 ---
 
