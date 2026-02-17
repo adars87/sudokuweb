@@ -340,7 +340,7 @@ function highlightErrors(conflicts) {
 }
 
 // ─── Solve Flow ──────────────────────────────────────────
-function attemptSolve(force = false) {
+function attemptSolve() {
     const board = readBoard();
 
     // ── Check if already fully solved (mirrors Java's etest(9)) ──
@@ -360,10 +360,10 @@ function attemptSolve(force = false) {
     // ── Validate before solving ──
     const conflicts = validateBoard(board);
 
-    if (conflicts.length > 0 && !force) {
+    if (conflicts.length > 0) {
         highlightErrors(conflicts);
         modalMessage.textContent =
-            `Found ${conflicts.length} conflicting cell(s). The current board has duplicates in a row, column, or box. Do you still want to attempt solving?`;
+            `Found ${conflicts.length} conflicting cell(s). The current board has duplicates in a row, column, or box. Would you like to generate a valid puzzle instead?`;
         modalOverlay.classList.remove('hidden');
         setStatus(`${conflicts.length} conflict(s) detected`, 'warning');
         return;
@@ -486,7 +486,7 @@ function clearBoard() {
 }
 
 // ─── Event Listeners ─────────────────────────────────────
-btnSolve.addEventListener('click', () => attemptSolve(false));
+btnSolve.addEventListener('click', () => attemptSolve());
 
 btnClear.addEventListener('click', clearBoard);
 
@@ -500,7 +500,8 @@ if (btnVerify) {
 
 modalProceed.addEventListener('click', () => {
     modalOverlay.classList.add('hidden');
-    attemptSolve(true);
+    highlightErrors([]);
+    generateRandomPuzzle();
 });
 
 modalCancel.addEventListener('click', () => {
