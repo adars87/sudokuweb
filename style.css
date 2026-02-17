@@ -138,11 +138,20 @@ body {
 }
 
 .toggle-arrow {
-  font-size: 0.9rem;
-  color: var(--text-secondary);
+  font-size: 1.1rem;
+  color: var(--accent);
   transition: transform 0.25s ease;
   position: absolute;
   right: 1.2rem;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: rgba(123, 92, 255, 0.15);
+  border: 1.5px solid var(--accent);
+  box-shadow: 0 0 8px var(--accent-glow);
 }
 
 .palette-toggle[aria-expanded="false"] .toggle-arrow {
