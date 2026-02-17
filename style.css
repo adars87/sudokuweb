@@ -123,13 +123,14 @@ body {
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   padding: 0.85rem 1.2rem;
   background: transparent;
   border: none;
   cursor: pointer;
   color: var(--text-primary);
   font-family: var(--font);
+  position: relative;
 }
 
 .palette-toggle .section-title {
@@ -140,6 +141,8 @@ body {
   font-size: 0.9rem;
   color: var(--text-secondary);
   transition: transform 0.25s ease;
+  position: absolute;
+  right: 1.2rem;
 }
 
 .palette-toggle[aria-expanded="false"] .toggle-arrow {

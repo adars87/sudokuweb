@@ -12,21 +12,6 @@
 // Each palette maps values 0–9 to a background color.
 // Index 0 = empty cell, 1–9 = digit colors.
 const COLOR_PALETTES = {
-    inferno: {
-        label: 'Inferno',
-        colors: [
-            '#1c1c36',   // 0 – empty
-            '#1b0c3a',   // 1
-            '#3d0f6e',   // 2
-            '#6a1b9a',   // 3
-            '#9c27b0',   // 4
-            '#d84315',   // 5
-            '#ef6c00',   // 6
-            '#f9a825',   // 7
-            '#fdd835',   // 8
-            '#ffff8d',   // 9
-        ],
-    },
     ocean: {
         label: 'Ocean',
         colors: [
@@ -87,24 +72,9 @@ const COLOR_PALETTES = {
             '#d0d0e0',
         ],
     },
-    heat: {
-        label: 'Thermal',
-        colors: [
-            '#1c1c36',
-            '#000044',
-            '#0000aa',
-            '#0044ff',
-            '#00aaff',
-            '#00ff88',
-            '#aaff00',
-            '#ffcc00',
-            '#ff6600',
-            '#ff0000',
-        ],
-    },
 };
 
-let activePalette = 'inferno';
+let activePalette = 'ocean';
 
 // ─── DOM ─────────────────────────────────────────────────
 const boardEl = document.getElementById('sudoku-board');
